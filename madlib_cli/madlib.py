@@ -1,31 +1,66 @@
 
-def read_template():
-    with open('./madlib_cli/assets/template_madlib.txt', 'r') as file:
-        contents = file.read()
-        print(contents)
-        print('File is closed.', file.closed)
-    return contents
+row = ' MadLibs Are Fun! '.center(40, '*')
 
-originalContent = read_template()
+
+def read_template(path):
+    with open(path) as file:
+        contents = file.read()
+        stripped_contents = contents.strip()
+        # print(stripped_contents)
+    return stripped_contents
+
 
 def parsed_madlib(contents):
-    string = "a {adjective} and not and {noun}, so yeah..."
-    found = ""
-    foundWords = []
-    for char in string(0, len(string)): 
-        if char == "{":
-            found = str(found[i])
-            found = string1.replace(i, '')
-        print(foundWords)
+    capturing = False
+    string = contents
+    parsed_string = ""
+    speech_words = []
+    current_speech_word = ""
 
-# substring = parsed_madlib(originalContent)
+    for char in string: 
+        if not capturing:
+            parsed_string += char
+            if char == "{":
+                capturing = True
+        else:
+            if char == "}":
+                capturing = False
+                speech_words.append(current_speech_word)
+                parsed_string += char
+                current_speech_word = ""
+            else:
+                current_speech_word += char
+    # print(parsed_string, speech_words)        
+    return (parsed_string, speech_words)
 
 
-# text = 'I want to find a string between two substrings' left = 'find a ' right = 'between two' # Output: 'string' print text[text.index(left)+len(left):text.index(right)]
+def user_input(parsed_string, speech_words):
+    response_list = []
+    
+    for words in speech_words:
+        response = input(f"{row}\nType the following type of word ({words})>:" )
+        response_list.append(response)
+    # print(response_list)
+    return response_list
 
-# How to get the substring between two markers in Python, Use indexing to get substring between two markers​​ To get where the substring starts, add len (start_marker) to string. find (start_marker) to get the index at which start marker ends. The substring ends at the start of the end marker.
 
-# Regular expressions are the most flexible option. How to get string between two delimiters python. 0. Extract Parts of String from in Between Two Characters-1.
+def merged_template(parsed_string, response_list):
+    # print(stripped_template.format(*response_list)
+    merged_madlib = parsed_string.format(*response_list)
+    print(row)
+    print(merged_madlib)
+    print(row)
+    return merged_madlib
 
-# with open('assets/template_madlib.copy', 'w') as f2:
-#     f2.write(trimmed)
+def make_a_copy():
+    data_for_copy = open("copy_madlib.txt", "x")
+    data_for_copy.write(merged_madlib)
+
+
+if __name__ == "__main__":
+    file_path = "./madlib_cli/assets/template_madlib.txt"
+    stripped_contents = read_template(file_path)
+    parsed_string, speech_words = parsed_madlib(stripped_contents)
+    response_list = user_input(parsed_string, speech_words)
+    merged_madlib = merged_template(parsed_string, response_list)
+    make_a_copy()
